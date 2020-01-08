@@ -1,15 +1,154 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        body{
+            text-align: center;
+        }
+        #file {
+            margin-top: 20px;
+        }
+        #cv {
+            margin-top: 50px;
+        }
+        #result {
+            margin: 20px auto 0 auto;
+        }
+        
+        /* contnet */
+        * {margin: 0;padding: 0;font-family: monospace;}
+        body {font-size: 11px; margin: 10px; font-family: simsun; background: #fff;}
+        p {
+             height: 11px;
+             color: #9254de;
+        }
+        p.ts { margin: 10px 0 0 0; width: 500px; float: left;}
+        span {width: 12px;}
+        .bt{ height: 37px; }
+        #up-button{
+            position: absolute;
+            right: 0;
+            top: 0;
+            cursor: pointer;
+            opacity: 0;
+            filter: alpha(opacity=0);
+            outline: none;
+        }
+        iframe {display: none;}
+    </style>
 </head>
+
 <body>
-    <p>git demo</p>
-    
+    <input type="file" id="file" onchange="readFile()">
+    <br/>
+    <canvas id="cv"> img area </canvas>
+    <div id="result"></div>
+    <script>
+        let oF = document.querySelector('#file');
+        let oK = document.querySelector('#ok');
+        let cv = document.querySelector('#cv');
+        let oD = document.querySelector('#result');
+
+        let ctx = cv.getContext('2d');  
+
+        let oImg = new Image();
+        let imgWidth = 300;
+        let imgHeight = 150;
 
 
+
+        // 根据灰度生成相应字符 MNHQ&OC?7>!:-;.
+        function toText(g) {
+            if (g <= 17) {
+                return 'M';
+            } else if (g > 17 && g <= 34) {
+                return 'N';
+            } else if (g > 34 && g <= 51) {
+                return 'H';
+            } else if (g > 51 && g <= 68) {
+                return 'Q';
+            } else if (g > 68 && g <= 85) {
+                return '&';
+            } else if (g > 85 && g <= 102) {
+                return 'O';
+            } else if (g > 102 && g <= 119) {
+                return 'C';
+            } else if (g > 119 && g <= 136) {
+                return '?';
+            } else if (g > 136 && g <= 153) {
+                return '7';
+            } else if (g > 153 && g <= 170) {
+                return '>';
+            } else if (g > 170 && g <= 187) {
+                return '!';
+            } else if (g > 187 && g <= 204) {
+                return ':';
+            } else if (g > 204 && g <= 221) {
+                return '-';
+            } else if (g > 221 && g <= 238) {
+                return ';';
+            } else {
+                return '.';
+            }
+        }
+
+
+        // 根据rgb值计算灰度
+        function getGray(r, g, b) {
+            return 0.299 * r + 0.578 * g + 0.114 * b;
+        }
+
+
+        function readFile() {
+            let file_read = new FileReader();
+            let url = '';
+            file_read.readAsDataURL(oF.files[0]);
+            file_read.onloadend = function() {
+                url = file_read.result;
+                oImg.src = url;
+                oImg.onload = function() {
+                    changeImg();                       
+                }
+            }
+        }
+
+        function changeImg() {
+            console.log(ctx.__proto__);
+            ctx.clearRect(0, 0, imgWidth, imgHeight);
+            oD.innerHTML = '';
+
+            imgHeight = oImg.height;
+            imgWidth = oImg.width;
+            cv.width = imgWidth;
+            cv.height = imgHeight;
+            console.log(imgWidth);
+            oD.style.width = imgWidth + 'px';
+            ctx.drawImage(oImg, 0, 0);  
+            let imgData = ctx.getImageData(0, 0, imgWidth, imgHeight).data;
+            for(let h = 0; h < imgHeight; h += 11) {
+                let p = '<p>'
+                for (let w = 0 ; w < imgWidth; w += 6) {
+                    let index = (w + imgWidth * h ) * 4;
+                    let r = imgData[ index + 0];
+                    let g = imgData[ index + 1];
+                    let b = imgData[ index + 2];
+                    p += toText(getGray(r, g, b));
+                }
+                p += '</p>';
+                oD.innerHTML += p;
+            }
+        }
+
+    </script>
 </body>
+
 </html>

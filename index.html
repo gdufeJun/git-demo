@@ -136,7 +136,7 @@
             let imgData = ctx.getImageData(0, 0, imgWidth, imgHeight).data;
             for(let h = 0; h < imgHeight; h += 11) {
                 let p = '<p>'
-                for (let w = 0 ; w < imgWidth; w += 6) {
+                for (let w = 0 ; w < imgWidth; w += 8) {
                     let index = (w + imgWidth * h ) * 4;
                     let r = imgData[ index + 0];
                     let g = imgData[ index + 1];
